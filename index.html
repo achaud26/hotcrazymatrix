@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Hot Crazy Matrix</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0c14;
+    --card: rgba(255,255,255,0.03);
+    --border: rgba(255,255,255,0.06);
+    --pink: #ff4d6a;
+    --gold: #ffcc00;
+    --blue: #4a90d9;
+    --text: #e0e0e0;
+    --muted: #556;
+    --grid: #1e2130;
+  }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(160deg, var(--bg) 0%, #111422 50%, #0d1018 100%);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+  }
+
+  .title-block { text-align: center; margin-bottom: 20px; }
+  .title-block h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 7vw, 56px);
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--pink), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.1;
+  }
+  .title-block p {
+    color: var(--muted); font-size: 13px; margin-top: 6px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  .home-chart {
+    width: 100%; max-width: 760px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 16px; padding: 16px 8px 8px;
+    margin-bottom: 28px;
+  }
+  .home-chart svg { width: 100%; display: block; margin: 0 auto; }
+
+  .start-btn {
+    padding: 16px 48px;
+    background: linear-gradient(135deg, var(--pink), #e6395a);
+    color: #fff; border: none; border-radius: 12px;
+    font-size: 18px; font-weight: 700; cursor: pointer;
+    font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    margin-bottom: 12px;
+  }
+  .start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(255,77,106,0.4);
+  }
+
+  .progress-track {
+    width: 100%; max-width: 540px; height: 4px;
+    background: #1a1d2e; border-radius: 2px;
+    margin-bottom: 28px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--pink), var(--gold));
+    transition: width 0.4s ease;
+  }
+
+  .card {
+    width: 100%; max-width: 540px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+    backdrop-filter: blur(10px);
+  }
+  .card .step-label {
+    font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;
+  }
+  .card h2 {
+    font-size: 24px; font-weight: 600; margin-bottom: 24px; line-height: 1.3;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt-btn {
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    color: var(--text); font-size: 16px;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer; text-align: left;
+    transition: all 0.2s ease;
+  }
+  .opt-btn:hover {
+    background: rgba(255,77,106,0.12);
+    border-color: rgba(255,77,106,0.4);
+    transform: translateX(4px);
+  }
+
+  .slider-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; font-size: 12px; color: #667;
+  }
+  .slider-val { font-size: 36px; font-weight: 900; color: var(--pink); }
+  input[type=range] {
+    width: 100%; height: 6px; appearance: none; -webkit-appearance: none;
+    background: var(--grid); border-radius: 3px; outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    appearance: none; -webkit-appearance: none;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--pink); cursor: pointer;
+    box-shadow: 0 0 8px rgba(255,77,106,0.5);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 20px; height: 20px; border-radius: 50%; border: none;
+    background: var(--pink); cursor: pointer;
+    box-shadow: 0 0 8px rgba(255,77,106,0.5);
+  }
+  .confirm-btn {
+    margin-top: 24px; width: 100%; padding: 14px 0;
+    background: linear-gradient(135deg, var(--pink), #e6395a);
+    color: #fff; border: none; border-radius: 10px;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .confirm-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255,77,106,0.35);
+  }
+
+  .back-btn {
+    margin-top: 16px; background: none; border: none;
+    color: var(--muted); cursor: pointer; font-size: 13px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .back-btn:hover { color: #aaa; }
+
+  .results { width: 100%; max-width: 760px; animation: fadeIn 0.6s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .score-cards {
+    display: flex; gap: 16px; margin-bottom: 20px;
+    justify-content: center; flex-wrap: wrap;
+  }
+  .score-card {
+    flex: 1 1 160px; max-width: 200px;
+    border-radius: 14px; padding: 20px 22px; text-align: center;
+  }
+  .score-card.hot {
+    background: rgba(255,77,106,0.08);
+    border: 1px solid rgba(255,77,106,0.2);
+  }
+  .score-card.hot .label { color: var(--pink); }
+  .score-card.hot .value { color: var(--pink); }
+  .score-card.crazy {
+    background: rgba(74,144,217,0.08);
+    border: 1px solid rgba(74,144,217,0.2);
+  }
+  .score-card.crazy .label { color: var(--blue); }
+  .score-card.crazy .value { color: var(--blue); }
+  .score-card.zone {
+    flex: 1 1 200px; max-width: 240px;
+    background: rgba(255,204,0,0.06);
+    border: 1px solid rgba(255,204,0,0.15);
+  }
+  .score-card .label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  .score-card .value { font-size: 40px; font-weight: 900; }
+  .score-card.zone .label { color: #999; }
+  .score-card.zone .zone-name { font-size: 22px; font-weight: 700; margin-top: 2px; }
+
+  .chart-wrap {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 16px; padding: 16px 8px 8px;
+  }
+  .chart-wrap svg { width: 100%; display: block; margin: 0 auto; }
+
+  .reset-wrap { text-align: center; margin-top: 24px; }
+  .reset-btn {
+    padding: 14px 36px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; color: #aaa;
+    font-size: 15px; font-family: 'Outfit', sans-serif; cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .reset-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="homeScreen">
+  <div class="title-block">
+    <h1>The Hot Crazy Matrix</h1>
+    <p>The Universal Scale</p>
+  </div>
+  <div class="home-chart" id="homeChart"></div>
+  <button class="start-btn" onclick="startQuiz()">Rate Her →</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quizScreen" class="hidden">
+  <div class="title-block">
+    <h1>The Hot Crazy Matrix</h1>
+    <p>The Universal Scale</p>
+  </div>
+  <div class="progress-track" id="progressTrack">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <div class="card" id="quizCard">
+    <div class="step-label" id="stepLabel"></div>
+    <h2 id="questionText"></h2>
+    <div id="questionBody"></div>
+  </div>
+  <button class="back-btn hidden" id="backBtn" onclick="goBack()">← Go back</button>
+</div>
+
+<!-- RESULTS -->
+<div class="results hidden" id="results">
+  <div class="title-block">
+    <h1>The Hot Crazy Matrix</h1>
+    <p>The Verdict Is In</p>
+  </div>
+  <div class="score-cards">
+    <div class="score-card hot">
+      <div class="label">Hot</div>
+      <div class="value" id="hotScore"></div>
+    </div>
+    <div class="score-card crazy">
+      <div class="label">Crazy</div>
+      <div class="value" id="crazyScore"></div>
+    </div>
+    <div class="score-card zone">
+      <div class="label">Zone</div>
+      <div class="zone-name" id="zoneName"></div>
+    </div>
+  </div>
+  <div class="chart-wrap" id="chartWrap"></div>
+  <div class="reset-wrap">
+    <button class="reset-btn" onclick="resetQuiz()">Try Another →</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  { id:"hot", prompt:"Using pure honesty, how attractive is she?", type:"slider", min:1, max:10, step:0.5, def:5 },
+  { id:"major", prompt:"What's her major?", type:"select", options:[
+    {label:"STEM",value:5.5},{label:"Business",value:6},{label:"Education",value:9},
+    {label:"Medical",value:8},{label:"PolySci",value:10},{label:"Liberal Arts",value:10}
+  ]},
+  { id:"eyes", prompt:"Does she have crazy eyes?", type:"select", options:[
+    {label:"Yes",value:12},{label:"No",value:6}
+  ]},
+  { id:"tax", prompt:"Tax Bracket?", type:"select", options:[
+    {label:"Upper Middle",value:6},{label:"Middle",value:7},{label:"Lower Middle",value:8},
+    {label:"Poor",value:9},{label:"Crazy Rich",value:10}
+  ]},
+  { id:"lebron", prompt:"How well does she know LeBron?", type:"select", options:[
+    {label:"Knows his memes",value:4},{label:"Could name all his teams",value:7},
+    {label:"Knows him",value:8},{label:"Doesn't know who he is",value:10}
+  ]},
+  { id:"snap", prompt:"Snap Score?", type:"select", options:[
+    {label:"0 – 200k",value:5},{label:"200k – 400k",value:7.5},
+    {label:"400k – 800k",value:9},{label:"> 800k",value:10}
+  ]},
+  { id:"wild", prompt:"Does she have crazy tendencies?", type:"select", options:[
+    {label:"Yes",value:13},{label:"No",value:4},{label:"I Don't Know",value:7.5}
+  ]},
+  { id:"megac", prompt:"From your knowledge, does she get around?", type:"slider", min:1, max:5, step:1, def:3,
+    labels:["Not at all","A little","I Don't Know","Decent amount","Major"],
+    mapValues:[2, 7.76, 7, 8.5, 20]
+  }
+];
+
+// ══ CHART ══
+// Curve: y = 5 - 6x/(7x-70)
+// Intersections: y=5.5→x=3.6842  y=7→x=7  y=7.5→x=7.4468  y=8→x=7.7778  y=9→x=8.2353
+const PAD={t:44,r:30,b:52,l:58}, CW=660, CH=520;
+const IW=CW-PAD.l-PAD.r, IH=CH-PAD.t-PAD.b;
+const sx=v=>PAD.l+(v/10)*IW, sy=v=>PAD.t+((10-v)/5)*IH;
+
+function buildChart(hot, crazy) {
+  // Curve path
+  let curve='';
+  for(let i=0;i<=600;i++){
+    const x=.01+(i/600)*9.98, y=5-(6*x)/(7*x-70);
+    if(y>=5&&y<=10) curve+=(curve?'L':'M')+sx(x).toFixed(1)+','+sy(y).toFixed(1)+' ';
+  }
+
+  // Grid lines
+  let grid='';
+  for(let v=0;v<=10;v++) grid+=`<line x1="${sx(v)}" y1="${sy(5)}" x2="${sx(v)}" y2="${sy(10)}" stroke="#1e2130" stroke-width="0.5"/>`;
+  for(let v=5;v<=10;v++) grid+=`<line x1="${sx(0)}" y1="${sy(v)}" x2="${sx(10)}" y2="${sy(v)}" stroke="#1e2130" stroke-width="0.5"/>`;
+
+  // Axis numbers + titles
+  let axes='';
+  for(let v=0;v<=10;v++) axes+=`<text x="${sx(v)}" y="${CH-14}" text-anchor="middle" fill="#778" font-size="12" font-family="Outfit" font-weight="500">${v}</text>`;
+  for(let v=5;v<=10;v++) axes+=`<text x="${PAD.l-16}" y="${sy(v)+4}" text-anchor="end" fill="#778" font-size="12" font-family="Outfit" font-weight="500">${v}</text>`;
+  axes+=`<text x="${CW/2}" y="${CH-1}" text-anchor="middle" fill="#99a0b0" font-size="15" font-family="Outfit" font-weight="700">HOT →</text>`;
+  axes+=`<text x="13" y="${CH/2}" text-anchor="middle" fill="#99a0b0" font-size="15" font-family="Outfit" font-weight="700" transform="rotate(-90,13,${CH/2})">← CRAZY</text>`;
+
+  // Region boundary lines — exact curve intersections
+  const ln=(x1,y1,x2,y2,d)=>`<line x1="${sx(x1)}" y1="${sy(y1)}" x2="${sx(x2)}" y2="${sy(y2)}" stroke="#4a90d9" stroke-width="1" opacity="0.55" ${d?'stroke-dasharray="6 4"':''}/>`;
+  let lines='';
+  lines+=ln(2,5.21,2,10);
+  lines+=ln(5,5,5,5.857);
+  lines+=ln(5,5.857,5,7,true);
+  lines+=ln(5,7,5,10);
+  lines+=ln(7,5,7,7);
+  lines+=ln(2,7,7,7);
+  lines+=ln(0,9,10,9);
+  lines+=ln(7,5.5,10,5.5);
+  lines+=ln(7.4468,7.5,10,7.5);   // starts at curve
+  lines+=ln(7.7778,8,10,8);       // starts at curve
+
+  // Zone labels — centered in each zone, sized to fit
+  const lb=(x,y,t,s,b,c)=>{
+    const ls=t.split('\n');
+    // offset multi-line text up so it's vertically centered
+    const totalH = ls.length * s * 1.2;
+    const startY = sy(y) - totalH/2 + s*0.6;
+    let r=`<text x="${sx(x)}" text-anchor="middle" fill="${c||'#d0d4dc'}" font-size="${s}" font-weight="${b?700:400}" font-family="Outfit" letter-spacing="0.3">`;
+    ls.forEach((l,i)=>{
+      r+=`<tspan x="${sx(x)}" y="${startY + i*s*1.2}">${l}</tspan>`;
+    });
+    return r+'</text>';
+  };
+
+  let labels='';
+  // Exact zone centers from computed boundaries
+  labels+=lb(1.0,  9.50, 'RUN',             20, 1, '#ff4d6a');     // (0-2, 9-10)
+  labels+=lb(1.0,  7.00, 'Why do\nyou exist?', 12, 0, '#667');     // (0-2, 5-9) big zone
+  labels+=lb(3.5,  9.50, 'They like\nblack guys', 14, 1);          // (2-5, 9-10)
+  labels+=lb(3.5,  8.00, '"Drunk 7"',       17, 1);                // (2-5, 7-9)
+  labels+=lb(3.5,  6.43, 'Acquaintance',    12, 0);                // (2-5, 5.857-7)
+  labels+=lb(3.5,  5.43, 'Homie',           12, 0);                // (2-5, 5-5.857)
+  labels+=lb(6.3,  9.50, 'Sidepiece',       15, 1);                // (5-~7.6, 9-10)
+  labels+=lb(6.0,  8.00, 'Do I\nwant her?', 14, 0);                // (5-7, 7-9)
+  labels+=lb(6.0,  6.43, 'Would',           13, 0);                // (5-7, 5.857-7)
+  labels+=lb(6.0,  5.43, 'Date',            13, 0);                // (5-7, 5-5.857)
+  labels+=lb(9.12, 9.50, 'DANGER\nZONE',    13, 1, '#ff4d6a');     // (8.24-10, 9-10)
+  labels+=lb(8.89, 8.50, 'One Night',       12, 0);                // (7.78-10, 8-9)
+  labels+=lb(8.72, 7.75, "Won't Last",      11, 0);                // (7.45-10, 7.5-8)
+  labels+=lb(8.5,  6.25, 'Wife',            22, 1, '#ffcc00');      // (7-10, 5.5-7)
+  labels+=lb(8.5,  5.25, 'Unicorn',         14, 1, '#ffcc00');      // (7-10, 5-5.5)
+
+  // Situationship circle at (7,7) — radius 18.25 (was 16, +0.25 scale units mapped)
+  let svg=`<svg viewBox="0 0 ${CW} ${CH}">
+    <defs>
+      <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    ${grid}${axes}${lines}${labels}
+    <path d="${curve}" fill="none" stroke="#ff4d6a" stroke-width="2.5" filter="url(#glow)"/>
+    <!-- Situationship circle -->
+    <circle cx="${sx(7)}" cy="${sy(7)}" r="20" fill="none" stroke="#ff4d6a" stroke-width="2.5"/>
+    <text x="${sx(7)}" y="${sy(7)-26}" text-anchor="middle" fill="#ff4d6a" font-size="10" font-weight="600" font-family="Outfit" letter-spacing="0.5">SITUATIONSHIP</text>`;
+
+  // Result dot
+  if(hot!=null&&crazy!=null){
+    const dx=sx(hot), dy=sy(crazy);
+    const anchor=hot>8.5?'end':'start';
+    const tx=hot>8.5?dx-16:dx+16;
+    svg+=`<circle cx="${dx}" cy="${dy}" r="12" fill="#ff4d6a" stroke="#fff" stroke-width="2.5" filter="url(#glow)"><animate attributeName="r" from="0" to="12" dur="0.4s" fill="freeze"/></circle>`;
+    svg+=`<text x="${tx}" y="${dy-18}" text-anchor="${anchor}" fill="#fff" font-size="13" font-weight="700" font-family="Outfit">(${hot.toFixed(1)}, ${crazy.toFixed(1)})</text>`;
+  }
+  return svg+'</svg>';
+}
+
+// ══ ZONES ══
+function getZone(h,c){
+  if(c>=9&&h<2) return{zone:"RUN",color:"#ff4d6a",emoji:"🏃"};
+  if(c>=9&&h<5) return{zone:"They Like Black Guys",color:"#c8cdd3",emoji:"👀"};
+  if(c>=9&&h<7.6) return{zone:"Sidepiece",color:"#c8cdd3",emoji:"🤫"};
+  if(c>=9) return{zone:"DANGER ZONE",color:"#ff4d6a",emoji:"⚠️"};
+  if(c>=8&&h>=7.7778) return{zone:"One Night",color:"#c8cdd3",emoji:"🌙"};
+  if(c>=7.5&&h>=7.4468) return{zone:"Won't Last",color:"#c8cdd3",emoji:"⏳"};
+  if(h<2) return{zone:"Why Do You Exist?",color:"#667",emoji:"❓"};
+  if(c>=7&&h<5) return{zone:'"Drunk 7"',color:"#c8cdd3",emoji:"🍺"};
+  if(c>=7&&h<7) return{zone:"Do I Want Her?",color:"#c8cdd3",emoji:"🤔"};
+  if(c<7&&h>=2&&h<5) return{zone:"Acquaintance",color:"#c8cdd3",emoji:"👋"};
+  if(c<7&&h>=5&&h<7) return{zone:"Would",color:"#c8cdd3",emoji:"😏"};
+  if(h>=7&&c<=5.5) return{zone:"Unicorn",color:"#ffcc00",emoji:"🦄"};
+  if(h>=7&&c<=7) return{zone:"Wife",color:"#ffcc00",emoji:"💍"};
+  if(c<5.857&&h>=5&&h<7) return{zone:"Date",color:"#c8cdd3",emoji:"🍷"};
+  return{zone:"Homie",color:"#c8cdd3",emoji:"🤝"};
+}
+
+// ══ STATE ══
+let step=0, answers={};
+
+document.getElementById('homeChart').innerHTML=buildChart(null,null);
+
+function startQuiz(){
+  document.getElementById('homeScreen').classList.add('hidden');
+  document.getElementById('quizScreen').classList.remove('hidden');
+  render();
+}
+
+function render(){
+  const total=QUESTIONS.length;
+  document.getElementById('progressFill').style.width=(step/total*100)+'%';
+  document.getElementById('stepLabel').textContent=`Question ${step+1} of ${total}`;
+  const q=QUESTIONS[step];
+  document.getElementById('questionText').textContent=q.prompt;
+  const body=document.getElementById('questionBody');
+  body.innerHTML='';
+
+  if(q.type==='slider'){
+    const val=answers[q.id]??q.def;
+    if(q.labels){
+      const idx=Math.round(val)-1;
+      body.innerHTML=`
+        <div style="text-align:center;margin-bottom:12px;">
+          <span class="slider-val" id="sliderLabel">${q.labels[idx]}</span>
+        </div>
+        <input type="range" id="qSlider" min="${q.min}" max="${q.max}" step="${q.step}" value="${val}">
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:#556;">
+          <span>${q.labels[0]}</span>
+          <span>${q.labels[q.labels.length-1]}</span>
+        </div>
+        <button class="confirm-btn" onclick="confirmSlider()">Lock it in →</button>`;
+      document.getElementById('qSlider').addEventListener('input',function(){
+        const v=Math.round(parseFloat(this.value));
+        this.value=v;
+        answers[q.id]=v;
+        document.getElementById('sliderLabel').textContent=q.labels[v-1];
+      });
+    } else {
+      body.innerHTML=`
+        <div class="slider-row">
+          <span>Not at all</span>
+          <span class="slider-val" id="sliderVal">${val.toFixed(1)}</span>
+          <span>Absolutely</span>
+        </div>
+        <input type="range" id="qSlider" min="${q.min}" max="${q.max}" step="${q.step}" value="${val}">
+        <button class="confirm-btn" onclick="confirmSlider()">Lock it in →</button>`;
+      document.getElementById('qSlider').addEventListener('input',function(){
+        answers[q.id]=parseFloat(this.value);
+        document.getElementById('sliderVal').textContent=parseFloat(this.value).toFixed(1);
+      });
+    }
+  } else {
+    const div=document.createElement('div');
+    div.className='options';
+    q.options.forEach(opt=>{
+      const btn=document.createElement('button');
+      btn.className='opt-btn';
+      btn.textContent=opt.label;
+      btn.onclick=()=>selectOption(q.id,opt.value);
+      div.appendChild(btn);
+    });
+    body.appendChild(div);
+  }
+  document.getElementById('backBtn').classList.toggle('hidden',step===0);
+}
+
+function confirmSlider(){
+  const q=QUESTIONS[step];
+  if(answers[q.id]==null) answers[q.id]=q.def;
+  if(q.mapValues){
+    answers[q.id+'_mapped']=q.mapValues[Math.round(answers[q.id])-1];
+  }
+  advance();
+}
+
+function selectOption(id,value){answers[id]=value;advance();}
+function advance(){if(step+1<QUESTIONS.length){step++;render();}else showResults();}
+function goBack(){if(step>0){step--;render();}}
+
+function showResults(){
+  document.getElementById('quizScreen').classList.add('hidden');
+  document.getElementById('results').classList.remove('hidden');
+  const hot=answers.hot??5;
+  const megac=answers.megac_mapped??7;
+  const raw=(answers.major+answers.eyes+answers.tax+answers.lebron+answers.snap+answers.wild+megac)/7;
+  let crazy=raw>10?10:raw<5?5:raw;
+  document.getElementById('hotScore').textContent=hot.toFixed(1);
+  document.getElementById('crazyScore').textContent=crazy.toFixed(1);
+  const zone=getZone(hot,crazy);
+  document.getElementById('zoneName').style.color=zone.color;
+  document.getElementById('zoneName').textContent=zone.emoji+' '+zone.zone;
+  document.querySelector('.score-card.zone').style.borderColor=zone.color+'33';
+  document.getElementById('chartWrap').innerHTML=buildChart(hot,crazy);
+}
+
+function resetQuiz(){
+  step=0;answers={};
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('homeScreen').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
